@@ -36,9 +36,9 @@ export default function AnnotationEditor({ file, onClose }: AnnotationEditorProp
   const { showToast } = useToast();
 
   const {
-    state, isDrawing, isDragging, selectedId, canUndo, canRedo, setTool, setColor, setLineWidth,
-    startDrawing, continueDrawing, endDrawing, addTextAnnotation, deleteSelected,
-    undo, redo, clearAnnotations, getCurrentAnnotation, getPageAnnotations, findAnnotationAtPoint,
+    state, isDrawing, isDragging, selectedId, canUndo, canRedo, isPolygonDrawing, currentPolygonPoints,
+    setTool, setColor, setLineWidth, startDrawing, continueDrawing, endDrawing, addPolygonVertex, closePolygon,
+    addTextAnnotation, deleteSelected, undo, redo, clearAnnotations, getCurrentAnnotation, getPageAnnotations, findAnnotationAtPoint,
   } = useAnnotation(currentPage);
 
   const handleExport = useCallback(() => {
@@ -254,7 +254,7 @@ export default function AnnotationEditor({ file, onClose }: AnnotationEditorProp
               <ImageViewer url={file.url} scale={scale} onDimensionsChange={handleDimensionsChange} onScaleChange={handleScaleChange} onBaseSize={handleBaseSize} />
             )}
             <div className="absolute inset-0" style={{ pointerEvents: state.tool === 'pan' ? 'none' : 'auto' }}>
-              <AnnotationCanvas width={dimensions.width} height={dimensions.height} scale={scale} annotations={getPageAnnotations(currentPage)} currentTool={state.tool} currentColor={state.color} currentLineWidth={state.lineWidth} isDrawing={isDrawing} isDragging={isDragging} selectedId={selectedId} getCurrentAnnotation={getCurrentAnnotation} onStartDrawing={startDrawing} onContinueDrawing={continueDrawing} onEndDrawing={endDrawing} onAddText={addTextAnnotation} onDeleteSelected={deleteSelected} findAnnotationAtPoint={(point) => findAnnotationAtPoint(point, state.annotations)} onRequestTextInput={handleOpenTextInput} />
+              <AnnotationCanvas width={dimensions.width} height={dimensions.height} scale={scale} annotations={getPageAnnotations(currentPage)} currentTool={state.tool} currentColor={state.color} currentLineWidth={state.lineWidth} isDrawing={isDrawing} isDragging={isDragging} selectedId={selectedId} isPolygonDrawing={isPolygonDrawing} currentPolygonPoints={currentPolygonPoints} getCurrentAnnotation={getCurrentAnnotation} onStartDrawing={startDrawing} onContinueDrawing={continueDrawing} onEndDrawing={endDrawing} onAddPolygonVertex={addPolygonVertex} onClosePolygon={closePolygon} onAddText={addTextAnnotation} onDeleteSelected={deleteSelected} findAnnotationAtPoint={(point) => findAnnotationAtPoint(point, state.annotations)} onRequestTextInput={handleOpenTextInput} />
             </div>
           </div>
         </div>
