@@ -610,6 +610,14 @@ export default function AnnotationCanvas({
     ],
   );
 
+  const handlePointerUp = useCallback(() => {
+    // 多边形工具：点击添加顶点，不需要在 pointerup 时结束绘制
+    // 只有双击时才会结束绘制（闭合多边形）
+    if (currentTool !== "polygon") {
+      onEndDrawing();
+    }
+  }, [currentTool, onEndDrawing]);
+
   const handlePointerLeave = useCallback(() => {
     onEndDrawing();
     setEraserPos(null);
@@ -650,7 +658,7 @@ export default function AnnotationCanvas({
         height={height}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerUp={onEndDrawing}
+        onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
         className="absolute inset-0 touch-none"
         style={{ cursor: getCursor() }}

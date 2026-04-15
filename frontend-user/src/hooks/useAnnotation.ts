@@ -498,9 +498,9 @@ export function useAnnotation(currentPage: number) {
     }
 
     if (!isDrawing) return;
-    setIsDrawing(false);
 
     if (state.tool === "eraser") {
+      setIsDrawing(false);
       // 如果有擦除操作，保存历史
       if (beforeEraseRef.current && erasedInStroke.current.size > 0) {
         pushHistory(state.annotations);
@@ -517,11 +517,13 @@ export function useAnnotation(currentPage: number) {
     // 多边形需要至少 3 个顶点
     if (annotation.type === "polygon") {
       if (annotation.points.length < 3) {
-        // 顶点不足，继续绘制
+        // 顶点不足，继续绘制，保持 isDrawing 为 true
         return;
       }
+      setIsDrawing(false);
       currentAnnotation.current = null;
     } else {
+      setIsDrawing(false);
       currentAnnotation.current = null;
       if (annotation.points.length < 2 && annotation.type !== "text") return;
     }
