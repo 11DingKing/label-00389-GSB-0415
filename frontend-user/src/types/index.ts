@@ -1,4 +1,14 @@
-export type ToolType = 'select' | 'pan' | 'pen' | 'highlighter' | 'text' | 'rectangle' | 'circle' | 'arrow' | 'eraser';
+export type ToolType =
+  | "select"
+  | "pan"
+  | "pen"
+  | "highlighter"
+  | "text"
+  | "rectangle"
+  | "circle"
+  | "arrow"
+  | "polygon"
+  | "eraser";
 
 export interface Point {
   x: number;
@@ -7,7 +17,7 @@ export interface Point {
 
 export interface Annotation {
   id: string;
-  type: Exclude<ToolType, 'select' | 'pan' | 'eraser'>;
+  type: Exclude<ToolType, "select" | "pan" | "eraser">;
   points: Point[];
   color: string;
   lineWidth: number;
@@ -18,7 +28,7 @@ export interface Annotation {
 export interface UploadedFile {
   id: string;
   name: string;
-  type: 'pdf' | 'image';
+  type: "pdf" | "image";
   url: string;
   file: File;
 }
