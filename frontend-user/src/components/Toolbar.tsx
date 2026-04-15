@@ -27,6 +27,7 @@ const tools: { type: ToolType; label: string; icon: JSX.Element }[] = [
   { type: 'rectangle', label: '矩形', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /></svg> },
   { type: 'circle', label: '圆形', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg> },
   { type: 'arrow', label: '箭头', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg> },
+  { type: 'polygon', label: '多边形', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2L2 7v10l10 5 10-5V7L12 2z" /></svg> },
   { type: 'eraser', label: '橡皮擦', icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M5.505 14.505l4.99 4.99M6 6l12 12M4.5 8.5L15.5 19.5M8.5 4.5L19.5 15.5M3 12l9 9M12 3l9 9" /></svg> },
 ];
 
