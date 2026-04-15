@@ -463,6 +463,11 @@ export function useAnnotation(currentPage: number) {
   );
 
   const endDrawing = useCallback(() => {
+    // 多边形绘制过程中不结束绘制，等待双击闭合
+    if (state.tool === "polygon" && isDrawingPolygon.current) {
+      return;
+    }
+
     if (isDragging) {
       setIsDragging(false);
       dragStartRef.current = null;
