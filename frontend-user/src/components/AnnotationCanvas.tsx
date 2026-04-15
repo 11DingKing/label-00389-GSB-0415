@@ -211,6 +211,7 @@ export default function AnnotationCanvas({
   const [hoveredAnnotation, setHoveredAnnotation] = useState<string | null>(
     null,
   );
+  const [currentMousePos, setCurrentMousePos] = useState<Point | null>(null);
   const lastClickTimeRef = useRef<number>(0);
   const lastClickPointRef = useRef<Point | null>(null);
   const animationFrameRef = useRef<number>();
@@ -309,6 +310,7 @@ export default function AnnotationCanvas({
     annotations.forEach((a) => {
       const isHoveredForErase =
         currentTool === "eraser" && hoveredAnnotation === a.id;
+      const isHovered = hoveredAnnotation === a.id && !isHoveredForErase;
 
       if (isHoveredForErase) {
         // 橡皮擦悬停效果：半透明 + 红色边框
@@ -330,6 +332,37 @@ export default function AnnotationCanvas({
           ctx.fillStyle = "rgba(239, 68, 68, 0.08)";
           ctx.setLineDash([]);
           ctx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+          ctx.restore();
+        }
+      } else if (isHovered) {
+        // 普通悬停效果：高亮显示
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        drawAnnotation(ctx, a, scale);
+        ctx.restore();
+
+        // 绘制高亮边框
+        const bounds = getAnnotationBounds(a);
+        if (bounds) {
+          ctx.save();
+          ctx.strokeStyle = "#0ea5e9";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 3]);
+
+          if (a.type === "polygon" && a.points.length >= 3) {
+            // 多边形：高亮显示轮廓
+            const scaledPoints = a.points.map((p) => baseToScreen(p, scale));
+            ctx.beginPath();
+            ctx.moveTo(scaledPoints[0].x, scaledPoints[0].y);
+            for (let i = 1; i < scaledPoints.length; i++) {
+              ctx.lineTo(scaledPoints[i].x, scaledPoints[i].y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+          } else {
+            // 其他形状：高亮显示边界框
+            ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+          }
           ctx.restore();
         }
       } else {
@@ -394,6 +427,29 @@ export default function AnnotationCanvas({
     const current = getCurrentAnnotation();
     if (current && isDrawing) {
       drawAnnotation(ctx, current, scale);
+
+      // 多边形绘制预览：从最后一个顶点到当前鼠标位置
+      if (
+        current.type === "polygon" &&
+        currentMousePos &&
+        current.points.length > 0
+      ) {
+        const lastPoint = baseToScreen(
+          current.points[current.points.length - 1],
+          scale,
+        );
+        const mouseScreenPos = baseToScreen(currentMousePos, scale);
+        ctx.save();
+        ctx.strokeStyle = current.color;
+        ctx.lineWidth = current.lineWidth * scale;
+        ctx.lineCap = "round";
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(lastPoint.x, lastPoint.y);
+        ctx.lineTo(mouseScreenPos.x, mouseScreenPos.y);
+        ctx.stroke();
+        ctx.restore();
+      }
     }
 
     // 橡皮擦光标
@@ -426,6 +482,7 @@ export default function AnnotationCanvas({
     selectedId,
     getAnnotationBounds,
     scale,
+    currentMousePos,
   ]);
 
   useEffect(() => {
@@ -511,11 +568,18 @@ export default function AnnotationCanvas({
       const screenPoint = getCanvasPoint(e, canvas);
       const basePoint = screenToBase(screenPoint, scale);
 
+      // 更新鼠标位置（用于多边形绘制预览）
+      setCurrentMousePos(basePoint);
+
       if (currentTool === "eraser") {
         setEraserPos(screenPoint);
         const found = findAnnotationAtPoint(basePoint, annotations);
         setHoveredAnnotation(found);
-      } else if (currentTool === "select" && !isDragging) {
+      } else if (
+        (currentTool === "select" || currentTool === "polygon") &&
+        !isDragging &&
+        !isDrawing
+      ) {
         const found = findAnnotationAtPoint(basePoint, annotations);
         setHoveredAnnotation(found);
       } else if (currentTool === "text" && !isDrawing) {
@@ -570,7 +634,7 @@ export default function AnnotationCanvas({
     if (currentTool === "pan") return "grab";
     if (currentTool === "text") return "text";
     if (currentTool === "eraser") return "none";
-    if (currentTool === "select") {
+    if (currentTool === "select" || currentTool === "polygon") {
       if (isDragging) return "grabbing";
       if (hoveredAnnotation) return "grab";
       return "default";
