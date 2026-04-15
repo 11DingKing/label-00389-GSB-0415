@@ -343,8 +343,10 @@ export function useAnnotation(currentPage: number) {
         } else {
           // 添加顶点
           if (currentAnnotation.current) {
+            // 先添加当前点击的点
+            currentAnnotation.current.points.push(point);
             // 双击闭合多边形（至少需要3个点）
-            if (isDoubleClick && currentAnnotation.current.points.length >= 2) {
+            if (isDoubleClick && currentAnnotation.current.points.length >= 3) {
               isDrawingPolygon.current = false;
               const annotation = currentAnnotation.current;
               currentAnnotation.current = null;
@@ -354,8 +356,6 @@ export function useAnnotation(currentPage: number) {
               setIsDrawing(false);
               return;
             }
-            // 单击添加顶点
-            currentAnnotation.current.points.push(point);
           }
         }
         return;
